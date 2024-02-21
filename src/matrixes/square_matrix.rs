@@ -1,4 +1,4 @@
-use crate::matrix::matrix::Matrix;
+use crate::matrixes::matrix::Matrix;
 use std::ops::{Add, Deref, DerefMut, Mul};
 
 #[derive(Debug, Eq, PartialEq)]
@@ -37,24 +37,19 @@ impl<T, const M: usize, const N: usize> From<Matrix<T, M, N>> for SquareMatrix<T
             }
         }
 
-        Self { 0: matrix }
+        Self(matrix)
     }
 }
 
-impl<T, const M: usize> Into<Matrix<T, M, M>> for SquareMatrix<T, M>
-    where
-        T: Default + Copy,
-{
-    fn into(self) -> Matrix<T, M, M> {
-        let mut matrix = Matrix::default();
+impl<T, const M: usize> From<[[T; M]; M]> for SquareMatrix<T, M> {
+    fn from(value: [[T; M]; M]) -> Self {
+        Self(Matrix::from(value))
+    }
+}
 
-        for m in 0..M {
-            for n in 0..M {
-                matrix[m][n] = self[m][n];
-            }
-        }
-
-        matrix
+impl<T, const M: usize> From<SquareMatrix<T, M>> for Matrix<T, M, M> {
+    fn from(value: SquareMatrix<T, M>) -> Self {
+        value.0
     }
 }
 
@@ -75,7 +70,7 @@ impl<T, const M: usize> Clone for SquareMatrix<T, M>
         T: Clone,
 {
     fn clone(&self) -> Self {
-        Self { 0: self.0.clone() }
+        Self(self.0.clone())
     }
 }
 

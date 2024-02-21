@@ -78,12 +78,6 @@ impl<T, const M: usize, const N: usize> From<[[T; N]; M]> for Matrix<T, M, N> {
     }
 }
 
-impl<T, const M: usize, const N: usize> Into<[[T; N]; M]> for Matrix<T, M, N> {
-    fn into(self) -> [[T; N]; M] {
-        self.matrix
-    }
-}
-
 impl<T, const M: usize, const N: usize> Default for Matrix<T, M, N>
     where
         T: Default + Clone,
@@ -122,7 +116,7 @@ impl<T, const M: usize, const N: usize> DerefMut for Matrix<T, M, N> {
 
 #[cfg(test)]
 mod test {
-    use crate::matrix::matrix::Matrix;
+    use crate::matrixes::matrix::Matrix;
 
     #[test]
     fn zero_eq_def() {
