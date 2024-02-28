@@ -12,9 +12,7 @@ fn fibonacci(n: usize) -> Integer {
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("matrixes multiplication", |b| {
-        b.iter(|| fibonacci(black_box(1000)))
-    });
+    c.bench_function("fibonacci", |b| b.iter(|| fibonacci(black_box(1000))));
 }
 
 criterion_group!(benches, criterion_benchmark);

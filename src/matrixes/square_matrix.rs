@@ -5,12 +5,12 @@ use std::ops::{Add, Deref, DerefMut, Mul};
 pub struct SquareMatrix<T, const M: usize>(Matrix<T, M, M>);
 
 impl<T, const M: usize> SquareMatrix<T, M>
-    where
-        T: Clone,
+where
+    T: Clone,
 {
     pub fn fast_pow(self, exp: usize) -> Self
-        where
-            T: Mul<Output=T> + Add<Output=T> + Default,
+    where
+        T: Mul<Output = T> + Add<Output = T> + Default,
     {
         if exp == 1 {
             self
@@ -25,8 +25,8 @@ impl<T, const M: usize> SquareMatrix<T, M>
 }
 
 impl<T, const M: usize, const N: usize> From<Matrix<T, M, N>> for SquareMatrix<T, M>
-    where
-        T: Default + Clone,
+where
+    T: Default + Clone,
 {
     fn from(value: Matrix<T, M, N>) -> Self {
         let mut matrix = Matrix::default();
@@ -54,9 +54,9 @@ impl<T, const M: usize> From<SquareMatrix<T, M>> for Matrix<T, M, M> {
 }
 
 impl<T, const M: usize> Mul for SquareMatrix<T, M>
-    where
-        T: Mul<Output=T> + Clone + Add<Output=T> + Default,
-        SquareMatrix<T, M>: From<Matrix<T, M, M>>,
+where
+    T: Mul<Output = T> + Clone + Add<Output = T> + Default,
+    SquareMatrix<T, M>: From<Matrix<T, M, M>>,
 {
     type Output = SquareMatrix<T, M>;
 
@@ -66,8 +66,8 @@ impl<T, const M: usize> Mul for SquareMatrix<T, M>
 }
 
 impl<T, const M: usize> Clone for SquareMatrix<T, M>
-    where
-        T: Clone,
+where
+    T: Clone,
 {
     fn clone(&self) -> Self {
         Self(self.0.clone())

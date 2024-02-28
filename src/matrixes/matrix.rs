@@ -1,4 +1,11 @@
+use std::fmt::Debug;
+use std::iter::Sum;
 use std::ops::{Add, Deref, DerefMut, Mul};
+use std::simd::{LaneCount, Simd, SimdElement, SupportedLaneCount};
+
+pub trait MulSimd<B, R> {
+    fn mul_simd(self, b: B) -> R;
+}
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Matrix<T, const M: usize, const N: usize> {
@@ -28,6 +35,29 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N>
     }
 }
 
+impl<T, const M: usize, const N: usize, const K: usize> MulSimd<Matrix<T, N, K>, Matrix<T, M, K>>
+for Matrix<T, M, N>
+    where
+        T: SimdElement + Add<Output=T> + Mul<Output=T> + Default + for<'a> Sum<&'a T>,
+        LaneCount<N>: SupportedLaneCount,
+        Simd<T, N>: Mul<Output=Simd<T, N>>,
+{
+    fn mul_simd(self, rhs: Matrix<T, N, K>) -> Matrix<T, M, K> {
+        let mut matrix = Matrix::default();
+
+        for m in 0..M {
+            for k in 0..K {
+                let simd_a = Simd::from_array(self[m]);
+                let simd_b = Simd::from_array(std::array::from_fn(|i| rhs[i][k]));
+                let simd_r = simd_a * simd_b;
+                matrix[m][k] = simd_r.as_array().iter().sum();
+            }
+        }
+
+        matrix
+    }
+}
+
 impl<T, O, const M: usize, const N: usize> Add for Matrix<T, M, N>
     where
         T: Add<Output=O> + Clone,
@@ -41,6 +71,26 @@ impl<T, O, const M: usize, const N: usize> Add for Matrix<T, M, N>
         for i in 0..M {
             for j in 0..N {
                 matrix[i][j] = self[i][j].clone() + rhs[i][j].clone();
+            }
+        }
+
+        matrix
+    }
+}
+
+impl<T, O, const M: usize, const N: usize> Mul<T> for Matrix<T, M, N>
+    where
+        T: Mul<Output=O> + Clone,
+        O: Default + Add<Output=O> + Clone,
+{
+    type Output = Matrix<O, M, N>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        let mut matrix = Matrix::default();
+
+        for m in 0..M {
+            for n in 0..N {
+                matrix[m][n] = self[m][n].clone() * rhs.clone();
             }
         }
 

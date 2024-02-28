@@ -1,8 +1,8 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use n_linear_algebra::matrixes::matrix::Matrix;
+use n_linear_algebra::matrixes::matrix::{Matrix, MulSimd};
 
-fn matrix_multiplication(a: Matrix<usize, 5, 4>, b: Matrix<usize, 4, 7>) -> Matrix<usize, 5, 7> {
-    a * b
+fn matrix_multiplication(a: Matrix<usize, 8, 8>, b: Matrix<usize, 8, 8>) -> Matrix<usize, 8, 8> {
+    a.mul_simd(b)
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
